@@ -14,18 +14,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function FormularioCadastro() {
+function FormularioCadastro({ aoEnviarForm, validarCPF }) {
   const classes = useStyles();
 
   const [nome, setNome] = useState("");
   const [sobrenome, setSobrenome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [promocoes, setPromocoes] = useState(true);
+  const [novidades, setNovidades] = useState(true);
+  const [erros, setErros] = useState({ cpf: { valido: true, texto: "" } });
 
   return (
     <form
       className={classes.root}
       onSubmit={(event) => {
         event.preventDefault();
-        console.log(nome, sobrenome);
+        aoEnviarForm({ nome, sobrenome, cpf, promocoes, novidades });
       }}
     >
       <TextField
@@ -41,7 +45,7 @@ function FormularioCadastro() {
       <TextField
         value={sobrenome}
         onChange={(event) => {
-            setSobrenome(event.target.value);
+          setSobrenome(event.target.value);
         }}
         id="sobrenome"
         label="Sobrenome"
@@ -49,6 +53,15 @@ function FormularioCadastro() {
         className={classes.inputCustomText}
       />
       <TextField
+        value={cpf}
+        onChange={(event) => {
+          setCpf(event.target.value);
+        }}
+        onBlur={(event) => {
+          setErros({ cpf: validarCPF(event.target.value) });
+        }}
+        error={!erros.cpf.valido}
+        helperText={erros.cpf.texto}
         id="cpf"
         label="CPF"
         variant="outlined"
@@ -56,11 +69,31 @@ function FormularioCadastro() {
       />
       <FormControlLabel
         label="Promoções"
-        control={<Switch name="promocoes" defaultChecked color="primary" />}
+        control={
+          <Switch
+            id="promocoes"
+            onChange={(event) => {
+              setPromocoes(event.target.checked);
+            }}
+            name="promocoes"
+            checked={promocoes}
+            color="primary"
+          />
+        }
       />
       <FormControlLabel
         label="Novidades"
-        control={<Switch name="novidades" defaultChecked color="primary" />}
+        control={
+          <Switch
+            id="novidades"
+            onChange={(event) => {
+              setNovidades(event.target.checked);
+            }}
+            name="novidades"
+            checked={novidades}
+            color="primary"
+          />
+        }
       />
       <Button type="submit" variant="contained" color="primary">
         Cadastrar
